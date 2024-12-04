@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            max-width: 800px;
+            padding: 20px 0;
+        }
+        .post {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .post h2 {
+            margin-top: 0;
+        }
+        .post p {
+            color: #555;
+        }
+        .actions {
+            margin-top: 10px;
+        }
+        .actions button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .actions button.edit {
+            background: #28a745;
+        }
+        .actions button.delete {
+            background: #dc3545;
+        }
+        .actions button:hover {
+            opacity: 0.9;
+        }
+        .create-post {
+            margin-bottom: 20px;
+        }
+        .create-post button {
+            background: #17a2b8;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .create-post button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MyBlog</h1>
+    </header>
+    <div class="container">
+        <!-- Button to create a new post -->
+        <div class="create-post">
+            <button onclick="window.location.href='/posts/new'">Create New Post</button>
+        </div>
+
+        <!-- List of blog posts -->
+        <div id="post-list">
+            <% posts.forEach(post => { %>
+                <div class="post">
+                    <h2><%= post.title %></h2>
+                    <p><%= post.content %></p>
+                    <div class="actions">
+                        <button class="edit" onclick="window.location.href='/posts/<%= post.id %>/edit'">Edit</button>
+                        <button class="delete" onclick="deletePost(<%= post.id %>)">Delete</button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script>
+        function deletePost(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                fetch(`/posts/${postId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Post deleted successfully.');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete the post.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

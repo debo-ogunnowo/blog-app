@@ -11,11 +11,11 @@ const renderSignup = (req, res) => {
 }
 
 const createUser = async (req, res) => {
-  const {username, passowrd} = req.body;
+  const {username, password} = req.body;
 
   const user = new User({username, password});
 
-  await User.save();
+  await user.save();
 
   res.json(user);
 };
@@ -35,11 +35,11 @@ const loginUser = async (req, res) => {
 
   const validPassword = await bcrypt.compare(password, user.password);
 
-  if (validPassword){
+  if (!validPassword){
     return res.status(401).send('Incorrect username or passwrod');
   }
 
-  const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET);
+  const token = await jwt.sign({userId: user._id}, process.env.JWT_SECRET);
 };
 
 module.exports = { createUser, loginUser, renderLogin, renderSignup };
