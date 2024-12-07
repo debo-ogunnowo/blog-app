@@ -17,29 +17,39 @@ const createUser = async (req, res) => {
 
   await user.save();
 
-  res.json(user);
+  const token = await jwt.sign({userId: user._id}, process.env.JWT_SECRET);
+  res.cookie('token', token, {httpOnly: true});
+  console.log(`User created: ${user.username}`, token);
+  res.redirect('/api/posts');
 };
 
 const loginUser = async (req, res) => {
-  const {username, password} = req.body;
+  try {
+    const {username, password} = req.body;
 
-  if (!username || !password) {
-    return res.status(400).send('Username and password required');
+    if (!username || !password) {
+      return res.status(400).send('Username and password required');
+    }
+
+    const user = await User.findOne({username});
+
+    if (!user){
+      return res.status(401).send('Incorrect username or passwrod');
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword){
+      return res.status(401).send('Incorrect username or passwrod');
+    }
+
+    const token = await jwt.sign({userId: user._id}, process.env.JWT_SECRET);
+    res.cookie('token', token, {httpOnly: true});
+    res.redirect('/api/posts');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('<h1> Internal server error </h1>');
   }
-
-  const user = await User.findOne({username});
-
-  if (!user){
-    return res.status(401).send('Incorrect username or passwrod');
-  }
-
-  const validPassword = await bcrypt.compare(password, user.password);
-
-  if (!validPassword){
-    return res.status(401).send('Incorrect username or passwrod');
-  }
-
-  const token = await jwt.sign({userId: user._id}, process.env.JWT_SECRET);
 };
 
 module.exports = { createUser, loginUser, renderLogin, renderSignup };

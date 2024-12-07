@@ -3,17 +3,12 @@ const User = require('../models/User');
 
 const auth = async function (req, res, next) {
   try {
-    if (!req.headers.authorization) {
-      return res.status(401).json({message: 'Unauthorized'});
+    const token = req.cookies.token;
+    
+    if (!token) {
+      return res.status(401).json({message: 'Unauthorized access'});
     }
-  
-    const token = req.headers.authorization.split(' ')[1];
-  
-    // verify token
-    if (!token){
-      return res.status(401).json({message: 'Unauthorized'});
-    }
-  
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
   
     // Add the decoded user information to the request object
@@ -28,6 +23,8 @@ const auth = async function (req, res, next) {
     next();
   
   } catch (error) {
+    res.clearCookie('token');
+    console.error(error);
     return res.status(401).json({message: 'Invalid token'});
   }
 } 
