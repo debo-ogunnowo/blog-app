@@ -89,7 +89,7 @@
                     <h2><%= post.title %></h2>
                     <p><%= post.content %></p>
                     <div class="actions">
-                        <button class="edit" onclick="window.location.href='/posts/<%= post.id %>/edit'">Edit</button>
+                        <button class="edit" onclick="window.location.href='/api/posts/<%= post.id %>/edit'">Edit</button>
                         <button class="delete" onclick="deletePost(<%= post.id %>)">Delete</button>
                     </div>
                 </div>
