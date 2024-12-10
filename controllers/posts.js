@@ -8,7 +8,8 @@ const renderHome = async (req, res) => {
     { id: 2, title: 'Second Post', content: 'This is the content of the second post.' }
   ]; */
 
-  const posts = await Post.find({userId: userId});
+  const DbPosts = await Post.find({userId: userId});
+  const posts = DbPosts.reverse();
 
   if (!posts) {
     return res.status(401).send('<h1> Something went wrong </h1>');
@@ -29,20 +30,6 @@ const renderHome = async (req, res) => {
 const renderNewPost = (req, res) => {
   res.render('pages/newPost');
 };
-
-/* const getPosts = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const posts = await Posts.find({userId: userId});
-  if (!posts) {
-    return res.status(401).send('<h1> Something went wrong </h1>');
-  }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
-  }
-}; */
 
 const createPost = async (req, res) => {
   try {
@@ -78,7 +65,6 @@ const updatePost = async (req, res) => {
   const {title, content} = req.body;
 
   try {
-    const userId = req.user.id;
     const postId = req.params.id;
   
     const updatedPost = await Post.findByIdAndUpdate(postId, {title, content}, {new: true});
@@ -95,9 +81,17 @@ const updatePost = async (req, res) => {
 };
 
 const deletePost = async (req, res) => {
+ try {
   const postId = req.params.id;
 
-  const updatedPost = await Post.findByIdAndDelete({_id: postId}, {userId: userId}, req.body);
+  const post = await Post.findByIdAndDelete({_id: postId});
+  
+  console.log('Post deleted');
+ } catch (error) {
+  console.error(error);
+  return res.status(500).send('<h1> Internal server error </h1>');
+ }
+  
 };
 
 module.exports = { renderHome, renderNewPost, createPost, getPost, updatePost, deletePost };
