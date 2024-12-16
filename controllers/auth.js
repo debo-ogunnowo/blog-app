@@ -14,7 +14,9 @@ const createUser = async (req, res) => {
   try {
     const {username, password} = req.body;
 
-    if (!User.findOne({username})) {
+    const existingUser = await User.findOne({username});
+
+    if (!existingUser) {
       const user = new User({username, password});
 
       await user.save();

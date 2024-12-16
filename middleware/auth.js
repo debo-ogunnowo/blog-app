@@ -6,7 +6,7 @@ const auth = async function (req, res, next) {
     const token = req.cookies.token;
     
     if (!token) {
-      return res.status(401).json({message: 'Unauthorized access'});
+      return res.status(401).send('<h1> Unauthorized access </h1>');
     }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -14,7 +14,7 @@ const auth = async function (req, res, next) {
     // Add the decoded user information to the request object
     const user = await User.findById(decoded.userId);
     if (!user) {
-      return res.status(400).json({message: 'User does not exist'});
+      return res.status(401).send('<h1> User does not exist </h1>');
     }
   
     req.user = user;
@@ -25,7 +25,7 @@ const auth = async function (req, res, next) {
   } catch (error) {
     res.clearCookie('token');
     console.error(error);
-    return res.status(401).json({message: 'Invalid token'});
+    return res.status(401).send('<h1> Invalid Token </h1>');
   }
 } 
 
