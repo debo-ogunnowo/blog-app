@@ -29,7 +29,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(cookieParser());
 app.use(express.json());
-app.use('/', authRouter);
+app.get('/', (req, res) => {
+  res.redirect('/api/login');
+});
 app.use('/api', authRouter);
 app.use('/api', authMiddleware, postsRouter);
 
